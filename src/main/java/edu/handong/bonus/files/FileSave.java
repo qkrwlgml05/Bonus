@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class FileSave {
-	ArrayList<String> filenames = new ArrayList<String>();
+	
 	
 	public void FFOption(String filename) {
 		File files = new File (filename);
-		if (files.isFile()) {
+		if (!files.isDirectory()) {
 			files = files.getParentFile();
 		}
 		String line = "";
@@ -23,6 +23,7 @@ public class FileSave {
 				line += file.getName();
 			
 		}
+		ArrayList<String> filenames = new ArrayList<String>();
 		filenames.add(line);
 		OptionsPrint.print(filenames);
 	}
@@ -30,7 +31,7 @@ public class FileSave {
 	public void AOption(String filename) {
 		File files = new File (filename);
 		ArrayList<String> fileSort = new ArrayList<String>();
-		if (files.isFile()) {
+		if (!files.isDirectory()) {
 			files = files.getParentFile();
 		}
 		String lines = "";
@@ -43,7 +44,7 @@ public class FileSave {
 		for (String line : fileSort) {
 			lines += line + "\t";
 		}
-		
+		ArrayList<String> filenames = new ArrayList<String>();
 		filenames.add(lines);
 		
 		OptionsPrint.print(filenames);
@@ -51,13 +52,13 @@ public class FileSave {
 
 	public void FOption(String filename) {
 		File files = new File (filename);
-		if (files.isFile()) {
+		if (!files.isDirectory()) {
 			files = files.getParentFile();
 		}
 		String lines = "";
 		for (File file : files.listFiles())
 			lines += file.getName() + "\t";
-		
+		ArrayList<String> filenames = new ArrayList<String>();
 		filenames.add(lines);
 		
 		OptionsPrint.print(filenames);
@@ -68,7 +69,7 @@ public class FileSave {
 		ArrayList<Long> modified = new ArrayList<Long>();
 		String line = "";
  		File files = new File (filename);
-		if (files.isFile()) {
+ 		if (!files.isDirectory()) {
 			files = files.getParentFile();
 		}
 
@@ -82,6 +83,7 @@ public class FileSave {
 		for (long modi : modified) 
 			line = fileSort.get(modi) + "\t" + line;
 		
+		ArrayList<String> filenames = new ArrayList<String>();
 		filenames.add(line);
 		
 		OptionsPrint.print(filenames);
@@ -89,7 +91,7 @@ public class FileSave {
 
 	public void ROption(String filename, String path) {
 		File files = new File (filename);
-		if (files.isFile()) {
+		if (!files.isDirectory()) {
 			files = files.getParentFile();
 		}
 
@@ -126,7 +128,7 @@ public class FileSave {
 			i++;
 			if (i%3 == 0) lines += "\n";
 		}
-		
+		ArrayList<String> filenames = new ArrayList<String>();
 		filenames.add(lines);
 		
 		OptionsPrint.print(filenames);
