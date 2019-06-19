@@ -76,9 +76,9 @@ public class FileSave {
 		for (String line : fileSort) {
 			filenames.add(line);
 		}
-		
-		filenames.add(0, ".");
+
 		filenames.add(0, "..");
+		filenames.add(0, ".");
 		
 		OptionsPrint.print(filenames);
 	}
@@ -96,8 +96,8 @@ public class FileSave {
 		for (File file : files.listFiles())
 			filenames.add(file.getName());
 
-		filenames.add(0, ".");
 		filenames.add(0, "..");
+		filenames.add(0, ".");
 		
 		OptionsPrint.print(filenames);
 	}
