@@ -9,16 +9,19 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.io.File;
+import java.io.IOException;
 
 import edu.handong.bonus.files.FileSave;
 
 public class LsOptionImplement {
 	private boolean help;
-	private boolean F;
+	//private boolean F;
 	private boolean a;
 	private boolean f;
 	private boolean t;
 	private boolean R;
+	private boolean rt;
+	private boolean r;
 	
 	private String name;
 	
@@ -35,19 +38,33 @@ public class LsOptionImplement {
 			} else {
 				if (name.contains("-")) {
 					name = System.getProperty("user.dir");
+				} else if (!name.contains("/")) {
+					name = System.getProperty("user.dir") + "/" + name;
 				}
 				
 				FileSave fi = new FileSave();
-				if (F) {
-					fi.FFOption(name);
-				} else if (a) {
+				/*if (F) {
+					try {
+						fi.FFOption(name);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else */if (a) {
 					fi.AOption(name);
 				} else if (f) {
 					fi.FOption(name);
 				} else if (t) {
-					fi.TOption(name);
+					fi.TOption(name, true);
+				} else if (rt) {
+					fi.TOption(name, false);
+				} else if (r) {
+					fi.freeOption(name, false);
 				} else if (R) {
+					System.out.println(".:");
 					fi.ROption(name, "");
+				}else {
+					fi.freeOption(name, true);
 				}
 			}
 		}
@@ -73,10 +90,12 @@ public class LsOptionImplement {
 			CommandLine cmd = parser.parse(options, args);
 			
 			help = cmd.hasOption("h");
-			F = cmd.hasOption("F");
+			//F = cmd.hasOption("F");
 			a = cmd.hasOption("a");
 			f = cmd.hasOption("f");
 			t = cmd.hasOption("t");
+			rt = cmd.hasOption("rt");
+			r = cmd.hasOption("r");
 			R = cmd.hasOption("R");
 		} catch (ParseException e) {
 			printHelp(options);
@@ -92,25 +111,33 @@ public class LsOptionImplement {
 		options.addOption(Option.builder("h").longOpt("help")
 				.desc("help")
 				.build());
-		
+		/*
 		options.addOption(Option.builder("F").longOpt("classify")
-				.desc("appends a character")
+				.desc("appends a character revealing the nature of a file, for example, * for an executable, or / for a directory. Regular files have no suffix.")
 				.build());
-		
+		*/
 		options.addOption(Option.builder("a").longOpt("all")
-				.desc("list all files.")
+				.desc(" lists all files in the given directory, including those whose names start with \".\" (which are hidden files in Unix). By default, these files are excluded from the list.\n")
 				.build());
 		
 		options.addOption(Option.builder("f")
-				.desc("do not sort.")
+				.desc("do not sort. Useful for directories containing large numbers of files.")
 				.build());
 		
-		options.addOption(Option.builder("t").longOpt("classify")
-				.desc("sort the list of files by modified time.")
+		options.addOption(Option.builder("t")
+				.desc("sort the list of files by modification time.")
+				.build());
+		
+		options.addOption(Option.builder("rt").longOpt("classify")
+				.desc("reverse order while sorting the list of files by modification time.")
+				.build());
+		
+		options.addOption(Option.builder("r").longOpt("reverse")
+				.desc("reverse order while sorting.")
 				.build());
 
-		options.addOption(Option.builder("R")
-				.desc("show information.")
+		options.addOption(Option.builder("R").longOpt("recursive")
+				.desc("recursively lists subdirectories. The command ls -R / would therefore list all files.")
 				.build());
 		
 		return options;

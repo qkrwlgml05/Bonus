@@ -1,117 +1,163 @@
 package edu.handong.bonus.files;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class FileSave {
 	
-	
-	public void FFOption(String filename) {
-		File files = new File (filename);
-		if (!files.isDirectory()) {
-			files = files.getParentFile();
-		}
-		String line = "";
-		for (File file : files.listFiles()) {
-			if (file.isDirectory()) 
-				line += file.getName()+"/";
-			else if (file.canExecute()) 
-				line+= file.getName()+"*";
-			else 
-				line += file.getName();
-			
-		}
+	/*
+	public void FFOption(String filename) throws IOException {
 		ArrayList<String> filenames = new ArrayList<String>();
-		filenames.add(line);
-		OptionsPrint.print(filenames);
-	}
-	
-	public void AOption(String filename) {
-		File files = new File (filename);
 		ArrayList<String> fileSort = new ArrayList<String>();
-		if (!files.isDirectory()) {
+		File files = new File (filename);
+		
+		
+		if (!files.exists()) {
 			files = files.getParentFile();
+		} else if (!files.isDirectory()) {
+			System.out.println(files.getName());
+			return;
 		}
-		String lines = "";
+		
 		for (File file : files.listFiles()) {
 			fileSort.add(file.getName());
 		}
 		
 		fileSort.sort(null);
 		
-		for (String line : fileSort) {
-			lines += line + "\t";
+		for (String file : fileSort) {
+			File fl = new File(filename+"/"+file);
+			if (fl.isDirectory()) 
+				filenames.add(fl.getName()+"/");
+			else if (fl.canExecute()) 
+				filenames.add(fl.getName()+"*");
+			else if (isSymlink(fl))
+				filenames.add(fl.getName()+"@");
+			else if (!fl.isHidden())
+				filenames.add(fl.getName());
 		}
+		
+		OptionsPrint.print(filenames);
+	}
+	
+	public static boolean isSymlink(File file) throws IOException {
+		  if (file == null)
+		    throw new NullPointerException();
+		  File canon;
+		  if (file.getParent() == null) {
+		    canon = file;
+		  } else {
+		    File canonDir = file.getParentFile().getCanonicalFile();
+		    canon = new File(canonDir, file.getName());
+		  }
+		  return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
+	}*/
+	
+	public void AOption(String filename) {
+		File files = new File (filename);
+		ArrayList<String> fileSort = new ArrayList<String>();
 		ArrayList<String> filenames = new ArrayList<String>();
-		filenames.add(lines);
+		if (!files.exists()) {
+			files = files.getParentFile();
+		} else if (!files.isDirectory()) {
+			System.out.println(files.getName());
+			return;
+		}
+		
+		for (File file : files.listFiles()) {
+			fileSort.add(file.getName());
+		}
+		
+		fileSort.sort(String.CASE_INSENSITIVE_ORDER);
+		
+		for (String line : fileSort) {
+			filenames.add(line);
+		}
+		
+		filenames.add(0, ".");
+		filenames.add(0, "..");
 		
 		OptionsPrint.print(filenames);
 	}
 
 	public void FOption(String filename) {
 		File files = new File (filename);
-		if (!files.isDirectory()) {
-			files = files.getParentFile();
-		}
-		String lines = "";
-		for (File file : files.listFiles())
-			lines += file.getName() + "\t";
 		ArrayList<String> filenames = new ArrayList<String>();
-		filenames.add(lines);
+		if (!files.exists()) {
+			files = files.getParentFile();
+		} else if (!files.isDirectory()) {
+			System.out.println(files.getName());
+			return;
+		}
+		
+		for (File file : files.listFiles())
+			filenames.add(file.getName());
+
+		filenames.add(0, ".");
+		filenames.add(0, "..");
 		
 		OptionsPrint.print(filenames);
 	}
 	
-	public void TOption(String filename) {
+	public void TOption(String filename, boolean check) {
 		HashMap<Long, String> fileSort = new HashMap<Long, String>();
 		ArrayList<Long> modified = new ArrayList<Long>();
-		String line = "";
  		File files = new File (filename);
- 		if (!files.isDirectory()) {
+ 		if (!files.exists()) {
 			files = files.getParentFile();
+		} else if (!files.isDirectory()) {
+			System.out.println(files.getName());
+			return;
 		}
 
 		for (File file : files.listFiles()) {
-			fileSort.put(file.lastModified(), file.getName());
-			modified.add(file.lastModified());
+			if (!file.isHidden()) {
+				fileSort.put(file.lastModified(), file.getName());
+				modified.add(file.lastModified());
+			}
 		}
 		
 		modified.sort(null);
-		
-		for (long modi : modified) 
-			line = fileSort.get(modi) + "\t" + line;
-		
 		ArrayList<String> filenames = new ArrayList<String>();
-		filenames.add(line);
+		if (check) {
+			for (long modi : modified)
+				filenames.add(0, fileSort.get(modi));
+		}else {
+			for (long modi : modified)
+				filenames.add(fileSort.get(modi));
+		}
 		
 		OptionsPrint.print(filenames);
 	}
 
 	public void ROption(String filename, String path) {
 		File files = new File (filename);
-		if (!files.isDirectory()) {
+		if (!files.exists()) {
 			files = files.getParentFile();
+		} else if (!files.isDirectory()) {
+			System.out.println(files.getName());
+			return;
 		}
 
-		ArrayList<String> fi = freeOption(filename);
+		ArrayList<String> fi = freeOption(filename, true);
 		System.out.println();
 		for (String filenames : fi) {
 			File file = new File(filename+"/"+filenames);
 			
 			if (file.isDirectory() && !file.isHidden()) {
-				
-				path += "/"+file.getName();
-				System.out.println("." + path+":");
-				ROption(filename+"/"+file.getName(), path);
+				System.out.println("." + path+"/"+file.getName()+":");
+				ROption(filename+"/"+file.getName(), path+"/"+file.getName());
 			}
 		}
 	}
 	
-	public ArrayList<String> freeOption (String filename) {
+	public ArrayList<String> freeOption (String filename, boolean check) {
 		File files = new File (filename);
 		ArrayList<String> fileSort = new ArrayList<String>();
+		ArrayList<String> filenames = new ArrayList<String>();
 		if (files.isFile()) {
 			files = files.getParentFile();
 		}
@@ -121,19 +167,19 @@ public class FileSave {
 				fileSort.add(file.getName());
 		}
 		
-		fileSort.sort(null);
-		int i = 0;
-		for (String line : fileSort) {
-			lines += line + "\t";
-			i++;
-			if (i%3 == 0) lines += "\n";
+		fileSort.sort(String.CASE_INSENSITIVE_ORDER);
+		if (check) {
+			for (String line : fileSort) 
+				filenames.add(line);
+		} else {
+			for (String line : fileSort)
+				filenames.add(0, line);
 		}
-		ArrayList<String> filenames = new ArrayList<String>();
+		
+		
 		filenames.add(lines);
 		
 		OptionsPrint.print(filenames);
 		return fileSort;
 	}
-	
-
 }
