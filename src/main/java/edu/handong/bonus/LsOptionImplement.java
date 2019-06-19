@@ -36,7 +36,7 @@ public class LsOptionImplement {
 				printHelp(options);
 				return;
 			} else {
-				if (name.contains("-")) {
+				if (name.contains("-") || name.equals("ls")) {
 					name = System.getProperty("user.dir");
 				} else if (!name.contains("/")) {
 					name = System.getProperty("user.dir") + "/" + name;
