@@ -28,8 +28,6 @@ public class LsOptionImplement {
 		
 		if (parseOption(options, args)) {
 			name = args[args.length-1];
-			System.out.println(args.length);
-			System.out.println(name);
 			
 			if (help) {
 				printHelp(options);
